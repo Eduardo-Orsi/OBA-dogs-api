@@ -26,6 +26,7 @@ public class DogService {
     
     // Create new dog
     public Dog createDog(Dog dog) {
+        // Ensure all fields, including especie and imagem, are set
         return dogRepository.save(dog);
     }
     
@@ -40,6 +41,8 @@ public class DogService {
             dog.setSexo(dogDetails.getSexo());
             dog.setPorte(dogDetails.getPorte());
             dog.setRaca(dogDetails.getRaca());
+            dog.setEspecie(dogDetails.getEspecie());
+            dog.setImagem(dogDetails.getImagem());
             return dogRepository.save(dog);
         } else {
             throw new RuntimeException("Dog not found with id: " + id);

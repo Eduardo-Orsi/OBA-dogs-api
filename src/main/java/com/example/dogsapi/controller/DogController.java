@@ -4,11 +4,14 @@ import com.example.dogsapi.model.Dog;
 import com.example.dogsapi.service.DogService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Optional;
+
 
 @RestController
 @RequestMapping("/api/dogs")
@@ -18,9 +21,32 @@ public class DogController {
     @Autowired
     private DogService dogService;
     
+    // DTO for Dog responses
+    public static class DogDTO {
+        public Long id;
+        public String nome;
+        public Integer idade;
+        public String sexo;
+        public String porte;
+        public String raca;
+        public String especie;
+        public String imagemUrl;
+
+        public DogDTO(Dog dog) {
+            this.id = dog.getId();
+            this.nome = dog.getNome();
+            this.idade = dog.getIdade();
+            this.sexo = dog.getSexo();
+            this.porte = dog.getPorte();
+            this.raca = dog.getRaca();
+            this.especie = dog.getEspecie();
+            this.imagemUrl = "/api/dogs/" + dog.getId() + "/imagem";
+        }
+    }
+    
     // GET /api/dogs - Get all dogs
     @GetMapping
-    public ResponseEntity<List<Dog>> getAllDogs(
+    public ResponseEntity<List<DogDTO>> getAllDogs(
             @RequestParam(required = false) String sexo,
             @RequestParam(required = false) String porte,
             @RequestParam(required = false) String raca) {
@@ -34,16 +60,17 @@ public class DogController {
             dogs = dogService.getAllDogs();
         }
         
-        return ResponseEntity.ok(dogs);
+        List<DogDTO> dogDTOs = dogs.stream().map(DogDTO::new).toList();
+        return ResponseEntity.ok(dogDTOs);
     }
     
     // GET /api/dogs/{id} - Get dog by ID
     @GetMapping("/{id}")
-    public ResponseEntity<Dog> getDogById(@PathVariable Long id) {
+    public ResponseEntity<DogDTO> getDogById(@PathVariable Long id) {
         Optional<Dog> dog = dogService.getDogById(id);
         
         if (dog.isPresent()) {
-            return ResponseEntity.ok(dog.get());
+            return ResponseEntity.ok(new DogDTO(dog.get()));
         } else {
             return ResponseEntity.notFound().build();
         }
@@ -55,6 +82,24 @@ public class DogController {
         try {
             Dog createdDog = dogService.createDog(dog);
             return ResponseEntity.status(HttpStatus.CREATED).body(createdDog);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+    
+    // PUT /api/dogs/{id}/imagem - Upload or update dog image
+    @PutMapping(value = "/{id}/imagem", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Void> uploadDogImage(@PathVariable Long id, @RequestParam("file") MultipartFile file) {
+        try {
+            Optional<Dog> optionalDog = dogService.getDogById(id);
+            if (optionalDog.isPresent()) {
+                Dog dog = optionalDog.get();
+                dog.setImagem(file.getBytes());
+                dogService.createDog(dog); // save updated dog
+                return ResponseEntity.ok().build();
+            } else {
+                return ResponseEntity.notFound().build();
+            }
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }
@@ -112,5 +157,16 @@ public class DogController {
             @RequestParam Integer maxAge) {
         List<Dog> dogs = dogService.getDogsByAgeRange(minAge, maxAge);
         return ResponseEntity.ok(dogs);
+    }
+
+    // GET /api/dogs/{id}/imagem - Get dog image by ID
+    @GetMapping(value = "/{id}/imagem", produces = MediaType.IMAGE_JPEG_VALUE)
+    public ResponseEntity<byte[]> getDogImage(@PathVariable Long id) {
+        Optional<Dog> dog = dogService.getDogById(id);
+        if (dog.isPresent() && dog.get().getImagem() != null) {
+            return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(dog.get().getImagem());
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 }

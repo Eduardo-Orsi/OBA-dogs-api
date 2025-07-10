@@ -1,0 +1,65 @@
+### Login to get JWT
+# @name login
+POST http://localhost:8080/login
+Content-Type: application/json
+
+{
+  "username": "admin@ong.com",
+  "password": "password"
+}
+
+@token = {{login.response.body.token}}
+
+### Create a new dog (replace <token> with your JWT)
+POST http://localhost:8080/api/dogs
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "nome": "TestDog",
+  "idade": 4,
+  "sexo": "Masculino",
+  "porte": "Médio",
+  "raca": "Vira-lata",
+  "especie": "Vira-lata"
+}
+
+### List all dogs
+GET http://localhost:8080/api/dogs
+
+### Get dog by ID (replace 1 with actual ID)
+GET http://localhost:8080/api/dogs/1
+
+### Upload an image to a dog (replace 1 with actual ID and <token> with your JWT)
+PUT http://localhost:8080/api/dogs/1/imagem
+Authorization: Bearer {{token}}
+Content-Type: multipart/form-data; boundary=WebAppBoundary
+
+--WebAppBoundary
+Content-Disposition: form-data; name="file"; filename="dog.jpg"
+Content-Type: image/jpeg
+
+< ./dog.jpg
+--WebAppBoundary--
+
+### Get dog image (replace 1 with actual ID)
+GET http://localhost:8080/api/dogs/1/imagem
+
+### Create a new user (SUPER_ADMIN only)
+POST http://localhost:8080/api/users
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "username": "user1@example.com",
+  "password": "user1password",
+  "role": "ADMIN"
+}
+
+### List all users
+GET http://localhost:8080/api/users
+Authorization: Bearer {{token}}
+
+### Get user by username
+GET http://localhost:8080/api/users/user1@example.com
+Authorization: Bearer {{token}}

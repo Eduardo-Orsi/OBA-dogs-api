@@ -24,17 +24,26 @@ public class Dog {
     
     @Column(nullable = false)
     private String raca;
+
+    @Column(nullable = false)
+    private String especie;
+
+    @Lob
+    @Column(nullable = true)
+    private byte[] imagem;
     
     // Default constructor
     public Dog() {}
     
     // Constructor with parameters
-    public Dog(String nome, Integer idade, String sexo, String porte, String raca) {
+    public Dog(String nome, Integer idade, String sexo, String porte, String raca, String especie, byte[] imagem) {
         this.nome = nome;
         this.idade = idade;
         this.sexo = sexo;
         this.porte = porte;
         this.raca = raca;
+        this.especie = especie;
+        this.imagem = imagem;
     }
     
     // Getters and Setters
@@ -85,6 +94,22 @@ public class Dog {
     public void setRaca(String raca) {
         this.raca = raca;
     }
+
+    public String getEspecie() {
+        return especie;
+    }
+
+    public void setEspecie(String especie) {
+        this.especie = especie;
+    }
+
+    public byte[] getImagem() {
+        return imagem;
+    }
+
+    public void setImagem(byte[] imagem) {
+        this.imagem = imagem;
+    }
     
     @Override
     public String toString() {
@@ -95,6 +120,7 @@ public class Dog {
                 ", sexo='" + sexo + '\'' +
                 ", porte='" + porte + '\'' +
                 ", raca='" + raca + '\'' +
+                ", especie='" + especie + '\'' +
                 '}';
     }
 }
