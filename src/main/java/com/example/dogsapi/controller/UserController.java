@@ -13,7 +13,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/users")
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "https://teste-oba.vercel.app")
 public class UserController {
     @Autowired
     private UserService userService;
