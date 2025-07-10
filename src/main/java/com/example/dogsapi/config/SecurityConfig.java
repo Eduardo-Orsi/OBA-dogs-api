@@ -50,7 +50,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PUT, "/api/dogs/**").hasAnyRole("ADMIN", "SUPER_ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/dogs/**").hasAnyRole("ADMIN", "SUPER_ADMIN")
                         .requestMatchers(HttpMethod.GET, "/api/doacoes/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/doacoes/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/doacoes/**").hasRole("ADMIN","SUPER_ADMIN")
                         .anyRequest().authenticated()
                 )
                 .csrf(csrf -> csrf.disable())
