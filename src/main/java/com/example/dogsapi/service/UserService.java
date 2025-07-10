@@ -29,4 +29,32 @@ public class UserService {
     public List<User> getAllUsers() {
         return userRepository.findAll();
     }
+
+    public User updateUser(String username, String newUsername, String newPassword, String newRole) {
+        Optional<User> optionalUser = userRepository.findByUsername(username);
+        if (optionalUser.isPresent()) {
+            User user = optionalUser.get();
+            if (newUsername != null && !newUsername.isBlank()) {
+                user.setUsername(newUsername);
+            }
+            if (newPassword != null && !newPassword.isBlank()) {
+                user.setPassword(passwordEncoder.encode(newPassword));
+            }
+            if (newRole != null && !newRole.isBlank()) {
+                user.setRole(newRole);
+            }
+            return userRepository.save(user);
+        } else {
+            throw new RuntimeException("Usuário não encontrado: " + username);
+        }
+    }
+
+    public void deleteUser(String username) {
+        Optional<User> optionalUser = userRepository.findByUsername(username);
+        if (optionalUser.isPresent()) {
+            userRepository.delete(optionalUser.get());
+        } else {
+            throw new RuntimeException("Usuário não encontrado: " + username);
+        }
+    }
 } 

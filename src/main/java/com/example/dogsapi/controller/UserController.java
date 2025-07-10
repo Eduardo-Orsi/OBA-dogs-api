@@ -51,6 +51,32 @@ public class UserController {
             .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
+    // PUT /api/users/{username} - Atualizar usuário (SUPER_ADMIN only)
+    @PutMapping("/{username}")
+    @PreAuthorize("hasRole('SUPER_ADMIN')")
+    public ResponseEntity<UserResponse> updateUser(@PathVariable String username, @RequestBody UpdateUserRequest req) {
+        try {
+            User updated = userService.updateUser(username, req.username, req.password, req.role);
+            return ResponseEntity.ok(new UserResponse(updated.getUsername(), updated.getRole()));
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    // DELETE /api/users/{username} - Excluir usuário (SUPER_ADMIN only)
+    @DeleteMapping("/{username}")
+    @PreAuthorize("hasRole('SUPER_ADMIN')")
+    public ResponseEntity<Void> deleteUser(@PathVariable String username) {
+        try {
+            userService.deleteUser(username);
+            return ResponseEntity.noContent().build();
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
     // DTO for user creation
     public static class CreateUserRequest {
         public String username;
@@ -66,5 +92,12 @@ public class UserController {
             this.username = username;
             this.role = role;
         }
+    }
+
+    // DTO para update
+    public static class UpdateUserRequest {
+        public String username;
+        public String password;
+        public String role;
     }
 } 

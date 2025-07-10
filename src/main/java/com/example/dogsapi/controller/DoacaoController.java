@@ -41,4 +41,28 @@ public class DoacaoController {
         Optional<Doacao> doacao = doacaoService.getDoacaoById(id);
         return doacao.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
+
+    // PUT /api/doacoes/{id} - Atualizar doação existente
+    @PutMapping("/{id}")
+    public ResponseEntity<Doacao> updateDoacao(@PathVariable Long id, @RequestBody Doacao doacaoDetails) {
+        try {
+            Doacao updatedDoacao = doacaoService.updateDoacao(id, doacaoDetails);
+            return ResponseEntity.ok(updatedDoacao);
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    // DELETE /api/doacoes/{id} - Excluir doação
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteDoacao(@PathVariable Long id) {
+        try {
+            doacaoService.deleteDoacao(id);
+            return ResponseEntity.noContent().build();
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
 } 
