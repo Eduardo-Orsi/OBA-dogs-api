@@ -50,7 +50,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PUT, "/api/dogs/**").hasAnyRole("ADMIN", "SUPER_ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/dogs/**").hasAnyRole("ADMIN", "SUPER_ADMIN")
                         .requestMatchers(HttpMethod.GET, "/api/doacoes/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/doacoes/**").hasRole("ADMIN","SUPER_ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/doacoes/**").hasAnyRole("ADMIN","SUPER_ADMIN")
                         .anyRequest().authenticated()
                 )
                 .csrf(csrf -> csrf.disable())
@@ -62,7 +62,7 @@ public class SecurityConfig {
     @Bean
     public org.springframework.web.cors.CorsConfigurationSource corsConfigurationSource() {
         org.springframework.web.cors.CorsConfiguration configuration = new org.springframework.web.cors.CorsConfiguration();
-        configuration.setAllowedOrigins(java.util.List.of("https://teste-oba.vercel.app", "https://obafloripa.vercel.app")); // Allow only the frontend URL
+        configuration.setAllowedOrigins(java.util.List.of("https://teste-oba.vercel.app", "https://obafloripa.vercel.app", "http://localhost:5501")); // Allow only the frontend URL
         configuration.setAllowedMethods(java.util.List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(java.util.List.of("*"));
         configuration.setAllowCredentials(true);
